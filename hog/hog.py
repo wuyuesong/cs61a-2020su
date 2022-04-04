@@ -78,6 +78,9 @@ def is_swap(player_score, opponent_score):
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if abs(player_score%10-opponent_score%10) == (opponent_score//10)%10:
+        return True
+    return False
     # END PROBLEM 4
 
 
@@ -118,6 +121,38 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    last0, last1 = 0, 0
+    while score0 < goal and score1 < goal:
+        num0 = strategy0(score0,score1)
+        add0 =  take_turn(num0,score1,dice)
+        if feral_hogs == True:
+            if abs(num0-last0) == 2:
+                score0 += 3
+        score0 += add0
+        last0 = add0
+        if is_swap(score0,score1):
+           t = score0
+           score0 = score1
+           score1 = t
+        say = say(score0,score1)
+        if score0 >= goal or score1 >= goal:
+            return score0, score1
+
+        num1 = strategy1(score1,score0)
+        add1 = take_turn(num1,score0,dice)
+        if feral_hogs == True:
+            if abs(num1-last1) == 2:
+                score1 += 3
+        score1 += add1
+        last1 = add1
+        if is_swap(score1,score0):
+           t = score0
+           score0 = score1
+           score1 = t
+        say = say(score0,score1)
+        if score1 >= goal or score0 >= goal:
+            return score0, score1
+
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
@@ -208,6 +243,20 @@ def announce_highest(who, last_score=0, running_high=0):
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    def say(score0,score1):
+        if who == 0:
+            mrunning_high = running_high
+            if score0 - last_score > running_high:
+                mrunning_high = score0 - last_score
+                print(mrunning_high, "point(s)! That's the biggest gain yet for Player", who)
+            return announce_highest(who,score0,mrunning_high)
+        else:
+            mrunning_high = running_high
+            if score1 - last_score > running_high:
+                mrunning_high = score1 - last_score
+                print(mrunning_high, "point(s)! That's the biggest gain yet for Player", who)
+            return announce_highest(who,score1,mrunning_high)
+    return say    
     # END PROBLEM 7
 
 
